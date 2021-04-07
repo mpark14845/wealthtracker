@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>NuageIT - Wealth Tracker</title>
+
+    <link rel="stylesheet"href="../node_modules\bootstrap\dist\css\bootstrap.min.css"/>
+    <link rel="stylesheet" href="./css/style.css">
+
+ </head>
+
+<body>
+    <nav class="  parkHeader wealthbanner"  >
+    <div class="siteName">
+      Wealth Tracker
+    </div>    
+    <button type="button" id="sidebarCollapse" class="btn btn-dark">        
+        <span>&#9776;</span>
+    </button>
+    <div class="navHeader-items" >
+        <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+        &nbsp;
+        <i class="fa fa-question-circle" aria-hidden="true"></i>
+    </div>
+  </nav>
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <ul class="list-unstyled components">
+                <li id ='navHome' class='navItemLI active'>
+                    <a href="#" onclick="closeWindow();"><i class="fas fa-home" ></i> Home</a>
+                </li>
+                <li id='navAssets' class="navItemLI">
+                    <a href="#" onclick="manageAssets();"><i class="fa fa-arrow-circle-up" aria-hidden="true"></i> Assets</a>
+                </li>
+                <li id='navDebts' class="navItemLI">
+                    <a href="#"  onclick="manageDebts();"><i class="fa fa-arrow-circle-down" aria-hidden="true"></i> Debts</a>
+                </li>
+                <li id='navSettings' class="navItemLI">
+                    <a href="#"  onclick="manageSettings();"><i class="fa fa-cogs" aria-hidden="true"></i> Settings</a>
+                </li>
+                <li id='navAbout' class="navItemLI">
+                  <a href="#"  onclick="manageAbout();"><i class="far fa-times-circle" aria-hidden="true"></i> About</a>
+              </li>
+                <li class="navItemLI">
+                    <a href="#"  onclick="exit();"><i class="far fa-times-circle" aria-hidden="true"></i> Exit</a>
+                </li>
+               
+            </ul>
+
+       
+        </nav>        
+
+            <!-- Main Window  -->            
+            <div class="content container " >              
+            <!-- Main Window-->
+          <div class="window" id="mainWindow">
+            <h3>Net Worth</h3> 
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <div class="card">
+                    <div class="card-header text-white bg-info">
+                      Personal Net Worth
+                    </div>
+                    <div class="card-body">
+                      <i class="fa fa-trophy" aria-hidden="true"></i>
+                      <span id="netWorthTotal">$0</span>
+                      <hr />
+                      <div class="chart-container">
+                        <canvas id="chartTotalWealth" ></canvas>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <div class="card-header text-white bg-success">Assets</div>
+                    <div class="card-body">
+                      <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+                      <span id="assetTotal">$0</span>
+                      <hr />
+                      <div id="assetTable" class='border border-success'>
+                        <div class="spinner-border text-primary" role="status">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      </div>
+                      <br/>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        onclick="manageAssets();"
+                      >
+                        Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <div class="card-header text-white bg-danger">Debts</div>
+                    <div class="card-body">
+                      <i class="fa fa-arrow-circle-down" aria-hidden="true"></i>
+                      <span id="debtTotal">$0</span>
+                      <hr />
+                      <div id="debtTable" class='border border-danger'>
+                        <div class="spinner-border text-primary" role="status">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      </div>
+                      <br />
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        onclick="manageDebts();"
+                      >
+                        Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+              type="button"
+              class="btn btn-primary"
+              onclick="outputToExcel();"
+            ><i class="fa fa-file-excel-o" aria-hidden="true"></i> 
+              Export to Excel
+            </button>
+            </div>
+          </div>
+
+          <!-- Asset Window-->
+          <div class="wrapper window" id="assetWindow" >
+            <div class="box content">
+              <h3>Assets</h3>              
+              <div id="assetWarningBlock"></div>
+              <table class="table table-bordered table-striped" id="assetDetailTable">
+                <thead class="alert-success">
+                  <tr>                    
+                    <th scope="col">Category</th>                    
+                    <th scope="col">Item</th>
+                    <th scope="col">Value</th>                    
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button
+                type="button"
+                class="btn btn-primary me-md-2"
+                onclick="closeWindow();"
+              >
+                Close
+              </button>
+              &nbsp;         
+              <button
+                type="button"
+                class="btn btn-success"
+                onclick="addItem(assetCollection, 'Asset');"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          <!-- Debt Window-->
+          <div class="wrapper window"  id="debtWindow">
+            <div class="box content">
+              <h3>Debt Manager</h3>
+              <div id="debtWarningBlock"></div>
+              <table class="table table-bordered table-striped" id="debtDetailTable">
+                <thead class="alert-danger">
+                  <tr>                    
+                    <th scope="col">Category</th>                    
+                    <th scope="col">Item</th>
+                    <th scope="col">Value</th>                    
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="closeWindow()"
+              >
+                Close
+              </button>
+              &nbsp;
+              <button
+                type="button"
+                class="btn btn-success"
+                onclick="addItem(debtCollection, 'Debt');"
+              >
+                Add
+              </button>
+            </div>
+          </div>        
+
+          <!-- Settings Window-->
+          <div class="wrapper window" id="settingsWindow">
+            <div class="box content">
+              <h3>Settings</h3>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="closeWindow()"
+              >
+                Close
+              </button>
+              
+            </div>
+          </div>
+
+          <!-- About Window-->
+          <div class="wrapper  window" id="aboutWindow">
+            <div class="box content">
+              <h3>About NuageIT Wealth Tracker</h3>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="closeWindow()"
+            >
+              Close
+            </button>
+          </div>
+         <!-- About Window-->
+
+          <!-- Help Window-->
+          <div class="wrapper  window" id="helpWindow">
+            <div class="box content">
+              <h3>Help NuageIT Wealth Tracker</h3>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="closeWindow()"
+            >
+              Close
+            </button>
+          </div>
+         <!-- About Window-->
+         
+            <div class="line"></div>
+
+ </div>
+    
+</main>
+
+<nav class="parkFooter" >
+   <div>Footer Content Goes Here Copywrite 2021</div>
+</nav>
+
+ <!-- Add Line Item Model -->
+ <div
+ class="modal fade"
+ id="editModal"
+ tabindex="-1"
+ aria-labelledby="editModalLabel"
+ aria-hidden="true"
+ style='top:100px;'
+>
+ <div class="modal-dialog">
+   <div class="modal-content">
+     <div id="itemType" style="display: none"></div>
+     <div class="modal-header">
+       <h5 class="modal-title" id="editModalLabel">Line Item Editor</h5>
+       <button
+         type="button"
+         class="close"
+         data-dismiss="modal"
+         aria-label="Close"
+       >
+         <span aria-hidden="true">&times;</span>
+       </button>
+     </div>
+     <div class="modal-body">
+       <div class="formHolder">
+         <form>
+           <h2>Row Item Editor</h2>
+           <div class="form-group">
+             <label for="linkCategory">Category</label>
+             <input
+               type="text"
+               class="form-control"
+               name="linkCategory"
+               id="linkCategory"
+               list="categoryList"
+             />
+             <datalist id="categoryList"></datalist>
+           </div>
+           <div class="form-group">
+             <label for="linkItem">Item</label>
+             <input
+               type="text"
+               class="form-control"
+               name="linkItem"
+               id="linkItem"
+             />
+           </div>
+           <div class="form-group">
+             <label for="linkValue">Value</label>
+             <input
+               type="number"
+               class="form-control"
+               name="linkValue"
+               id="linkValue"
+             />
+           </div>
+         </form>
+       </div>
+     </div>
+     <div class="modal-footer">
+       <button
+         type="button"
+         class="btn btn-warning"
+         id="btnDeleteContent"
+         onclick="DeleteRecord()"
+         ;
+       >
+         Delete
+       </button>
+       <button
+         type="button"
+         class="btn btn-primary"
+         id="btnSaveContent"
+         onclick="SaveRecord();"
+       >
+         Save
+       </button>
+       <button
+         type="button"
+         class="btn btn-secondary"
+         data-dismiss="modal"
+       >
+         Close
+       </button>
+     </div>
+   </div>
+ </div>
+</div>
+<!--END Add Link Modal -->
+<template id="templateWarningBox">
+    <div class="alert alert-warning" role="alert">
+      <p></p>
+    </div>
+</template>
+
+<script>
+    window.$ = window.jQuery = require("jquery");
+  </script>
+<script src="../node_modules\bootstrap\dist\js\bootstrap.min.js"></script> 
+<script src="../node_modules\chart.js\dist\Chart.min.js"></script>
+<script src="https://kit.fontawesome.com/5de08715ea.js" crossorigin="anonymous"></script>
+<script defer src="./js/app.js"></script>
+<script defer src="./js/localcharts.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+
+            closeWindow() 
+            
+        });
+
+        
+    </script>
+</body>
+
+</html>
