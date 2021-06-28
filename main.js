@@ -20,9 +20,12 @@ function createWindow () {
   //win.webContents.openDevTools();
 }
 
+
+
 app.whenReady().then(() => {
   app.setAppUserModelId("NuageIT Wealth Tracker");
   createWindow()
+  
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

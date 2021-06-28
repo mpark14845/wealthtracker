@@ -15,19 +15,23 @@
  </head>
 
 <body>
+  <header id="pageHeader">
     <nav class="  parkHeader wealthbanner"  >
     <div class="siteName">
       Wealth Tracker
     </div>    
+    &nbsp;
     <button type="button" id="sidebarCollapse" class="btn btn-dark">        
-        <span>&#9776;</span>
+      <span>&#9776;</span>
     </button>
     <div class="navHeader-items" >
         <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-        &nbsp;
+        
         <i class="fa fa-question-circle" aria-hidden="true"></i>
     </div>
   </nav>
+</header>
+<nav id="mainNav">
     <div class="wrapper">
         <!-- Sidebar  -->
         <nav id="sidebar">
@@ -45,7 +49,7 @@
                     <a href="#"  onclick="manageSettings();"><i class="fa fa-cogs" aria-hidden="true"></i> Settings</a>
                 </li>
                 <li id='navAbout' class="navItemLI">
-                  <a href="#"  onclick="manageAbout();"><i class="far fa-times-circle" aria-hidden="true"></i> About</a>
+                  <a href="#"  onclick="manageAbout();"><i class="far fa-times-circle-info" aria-hidden="true"></i> About</a>
               </li>
                 <li class="navItemLI">
                     <a href="#"  onclick="exit();"><i class="far fa-times-circle" aria-hidden="true"></i> Exit</a>
@@ -54,10 +58,11 @@
             </ul>
 
        
-        </nav>        
-
+        </nav>    
+</nav>    
+        <content id="mainContent">
             <!-- Main Window  -->            
-            <div class="content container " >              
+            <div class="content container mainContent" >              
             <!-- Main Window-->
           <div class="window" id="mainWindow">
             <h3>Net Worth</h3> 
@@ -128,13 +133,7 @@
                   </div>
                 </div>
               </div>
-              <button
-              type="button"
-              class="btn btn-primary"
-              onclick="outputToExcel();"
-            ><i class="fa fa-file-excel-o" aria-hidden="true"></i> 
-              Export to Excel
-            </button>
+              
             </div>
           </div>
 
@@ -215,16 +214,41 @@
             <div class="box content">
               <h3>Settings</h3>
             </div>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="closeWindow()"
-              >
-                Close
-              </button>
-              
+            <div class="row">
+              <div class="col-8">
+                <div class="form-group">
+                  <label for="exportFolder">Export Folder</label>
+                  <div class="input-group input-group-sm mb-3">
+                      <input type="text" class="form-control" name="exportFolder" id="exportFolder"  readonly>          
+                      <div class="input-group-append">
+                          <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="selectExportFolder();">Select Folder</button>                            
+                      </div>                  
+                  </div>
+                </div>  
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    onclick="outputToExcel();"
+                  ><i class="fa fa-file-excel-o" aria-hidden="true"></i> 
+                    Export to Excel
+                  </button>
+                    &nbsp;
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="closeWindow()"
+                  >
+                    Close
+                  </button>
+                  
+                </div>
+              </div>
+              <div class="col">  
+              </div>
             </div>
+
+            
           </div>
 
           <!-- About Window-->
@@ -261,11 +285,12 @@
 
  </div>
     
-</main>
-
-<nav class="parkFooter" >
-   <div>Footer Content Goes Here Copywrite 2021</div>
-</nav>
+</content>
+<footer id="pageFooter">
+  <nav class="parkFooter" >
+    <div>Footer Content Goes Here Copywrite 2021</div>
+  </nav>
+</footer>
 
  <!-- Add Line Item Model -->
  <div
@@ -375,6 +400,7 @@
         $(document).ready(function () {
             $('#sidebarCollapse').on('click', function () {
                 $('#sidebar').toggleClass('active');
+                $('#mainNav').toggleClass('activeWidth');
             });
 
             closeWindow() 

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<title>NuageIT - Wealth Tracker</title>
+
+<link rel="stylesheet"href="../node_modules\bootstrap\dist\css\bootstrap.min.css"/>
+<link rel="stylesheet" href="./css/style.css">
+<style>
+  body {
+      
+    display: grid;
+    grid-template-areas:
+      "header header header"
+      "nav content side"
+      "footer footer footer";
+    grid-template-rows: 60px 1fr 60px;
+    grid-template-columns: 20% 1fr 10%;
+    grid-gap: 1px;
+    height: 100vh;
+    margin: 0;
+  }
+
+  #pageHeader {
+    background-color: #333;
+    grid-area: header;
+  }
+  #pageFooter {
+    background-color: #333;
+    grid-area: footer;
+  }
+  #mainContent {
+      text-align: left;
+    grid-area: content;
+  }
+  #mainNav {
+    grid-area: nav;
+  }
+  #siteSide {
+    grid-area: side;
+  }
+
+
+  #sidebar {
+  min-width: 205px;
+  max-width: 205px;
+  border-right: none;
+  border-bottom: none;
+  background-color:lightgray;
+  transition: all 0.3s;
+  height: 100%;
+}
+
+
+  .parkFooter2 {
+  color: white;
+  font-size: small;
+   
+  
+  padding: 10px;
+}
+</style>
+<body>
+  <header id="pageHeader">
+    <nav class="  parkHeader wealthbanner"  >
+        <div class="siteName">
+          Wealth Tracker
+        </div>    
+
+        <div class="navHeader-items" >
+            <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+            &nbsp;
+            <i class="fa fa-question-circle" aria-hidden="true"></i>
+        </div>
+      </nav>
+  </header>
+  <content id="mainContent">
+    <!-- Main Window  -->            
+    <div class="content container " >              
+        <!-- Main Window-->
+      <div class="window" id="mainWindow">
+        <h3>Net Worth</h3> 
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <div class="card">
+                <div class="card-header text-white bg-info">
+                  Personal Net Worth
+                </div>
+                <div class="card-body">
+                  <i class="fa fa-trophy" aria-hidden="true"></i>
+                  <span id="netWorthTotal">$0</span>
+                  <hr />
+                  <div class="chart-container">
+                    <canvas id="chartTotalWealth" ></canvas>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card">
+                <div class="card-header text-white bg-success">Assets</div>
+                <div class="card-body">
+                  <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+                  <span id="assetTotal">$0</span>
+                  <hr />
+                  <div id="assetTable" class='border border-success'>
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                  <br/>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="manageAssets();"
+                  >
+                    Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card">
+                <div class="card-header text-white bg-danger">Debts</div>
+                <div class="card-body">
+                  <i class="fa fa-arrow-circle-down" aria-hidden="true"></i>
+                  <span id="debtTotal">$0</span>
+                  <hr />
+                  <div id="debtTable" class='border border-danger'>
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                  <br />
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="manageDebts();"
+                  >
+                    Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <!-- Asset Window-->
+      <div class="wrapper window" id="assetWindow" >
+        <div class="box content">
+          <h3>Assets</h3>              
+          <div id="assetWarningBlock"></div>
+          <table class="table table-bordered table-striped" id="assetDetailTable">
+            <thead class="alert-success">
+              <tr>                    
+                <th scope="col">Category</th>                    
+                <th scope="col">Item</th>
+                <th scope="col">Value</th>                    
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button
+            type="button"
+            class="btn btn-primary me-md-2"
+            onclick="closeWindow();"
+          >
+            Close
+          </button>
+          &nbsp;         
+          <button
+            type="button"
+            class="btn btn-success"
+            onclick="addItem(assetCollection, 'Asset');"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+
+      <!-- Debt Window-->
+      <div class="wrapper window"  id="debtWindow">
+        <div class="box content">
+          <h3>Debt Manager</h3>
+          <div id="debtWarningBlock"></div>
+          <table class="table table-bordered table-striped" id="debtDetailTable">
+            <thead class="alert-danger">
+              <tr>                    
+                <th scope="col">Category</th>                    
+                <th scope="col">Item</th>
+                <th scope="col">Value</th>                    
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="closeWindow()"
+          >
+            Close
+          </button>
+          &nbsp;
+          <button
+            type="button"
+            class="btn btn-success"
+            onclick="addItem(debtCollection, 'Debt');"
+          >
+            Add
+          </button>
+        </div>
+      </div>        
+
+      <!-- Settings Window-->
+      <div class="wrapper window" id="settingsWindow">
+        <div class="box content">
+          <h3>Settings</h3>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <div class="form-group">
+              <label for="exportFolder">Export Folder</label>
+              <div class="input-group input-group-sm mb-3">
+                  <input type="text" class="form-control" name="exportFolder" id="exportFolder"  readonly>          
+                  <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="selectExportFolder();">Select Folder</button>                            
+                  </div>                  
+              </div>
+            </div>  
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button
+                type="button"
+                class="btn btn-success"
+                onclick="outputToExcel();"
+              ><i class="fa fa-file-excel-o" aria-hidden="true"></i> 
+                Export to Excel
+              </button>
+                &nbsp;
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="closeWindow()"
+              >
+                Close
+              </button>
+              
+            </div>
+          </div>
+          <div class="col">  
+          </div>
+        </div>
+
+        
+      </div>
+
+      <!-- About Window-->
+      <div class="wrapper  window" id="aboutWindow">
+        <div class="box content">
+          <h3>About NuageIT Wealth Tracker</h3>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="closeWindow()"
+        >
+          Close
+        </button>
+      </div>
+     <!-- About Window-->
+
+      <!-- Help Window-->
+      <div class="wrapper  window" id="helpWindow">
+        <div class="box content">
+          <h3>Help NuageIT Wealth Tracker</h3>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="closeWindow()"
+        >
+          Close
+        </button>
+      </div>
+     <!-- About Window-->
+     
+        <div class="line"></div>
+
+</div>
+
+
+  </content>
+  <nav id="mainNav">
+    <nav id="sidebar">
+        <ul class="list-unstyled components">
+            <li id ='navHome' class='navItemLI active'>
+                <a href="#" onclick="closeWindow();"><i class="fas fa-home" ></i> Home</a>
+            </li>
+            <li id='navAssets' class="navItemLI">
+                <a href="#" onclick="manageAssets();"><i class="fa fa-arrow-circle-up" aria-hidden="true"></i> Assets</a>
+            </li>
+            <li id='navDebts' class="navItemLI">
+                <a href="#"  onclick="manageDebts();"><i class="fa fa-arrow-circle-down" aria-hidden="true"></i> Debts</a>
+            </li>
+            <li id='navSettings' class="navItemLI">
+                <a href="#"  onclick="manageSettings();"><i class="fa fa-cogs" aria-hidden="true"></i> Settings</a>
+            </li>
+            <li id='navAbout' class="navItemLI">
+              <a href="#"  onclick="manageAbout();"><i class="far fa-times-circle" aria-hidden="true"></i> About</a>
+          </li>
+            <li class="navItemLI">
+                <a href="#"  onclick="exit();"><i class="far fa-times-circle" aria-hidden="true"></i> Exit</a>
+            </li>
+           
+        </ul>
+
+   
+    </nav>   
+  </nav>
+  <div id="siteSide"></div>
+  <footer id="pageFooter"><nav class="parkFooter2" >
+    <div>Footer Content Goes Here Copywrite 2021</div>
+ </nav>
+ </footer>
+</body>
