@@ -3,3 +3,4 @@ This is a simple Electron app to manage personal wealth.  It is based on an Exce
 
 Michael Park
 mpark@nuageit.com
+http://mikepark.com
