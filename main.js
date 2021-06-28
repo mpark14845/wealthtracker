@@ -2,7 +2,7 @@ const { app, ipcMain, BrowserWindow, dialog } = require("electron");
 const path = require("path");
 const Files = require("./Files");
 
-process.env.NODE_ENV = "dev";
+process.env.NODE_ENV = "prod";
 
 const isDev = process.env.NODE_ENV === "prod" ? true : false;
 const isMac = process.platform === "darwin" ? true : false;
