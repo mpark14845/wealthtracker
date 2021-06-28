@@ -7,7 +7,7 @@ process.env.NODE_ENV = "dev";
 const isDev = process.env.NODE_ENV === "prod" ? true : false;
 const isMac = process.platform === "darwin" ? true : false;
 
-const files = new Files("./data/nuageit-wealth.json");
+const files = new Files("nuageit-wealth.json");
 
 let mainWindow;
 
@@ -31,6 +31,7 @@ function createWindow() {
 app.whenReady().then(() => {
   app.setAppUserModelId("NuageIT Wealth Tracker");
   createWindow();
+  files.checkDefaultFile();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {

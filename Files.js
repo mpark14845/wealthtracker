@@ -7,8 +7,50 @@ class Files {
     this.jsonDataFile = dataFile;
   }
 
+  checkDefaultFile() {
+    const filename = this.jsonDataFile;
+    if (!fs.existsSync(filename)) {
+      const defaultItems = {
+        Assets: [
+          { id: 5, category: "Properties", item: "Home", value: 500000 },
+          { id: 4, category: "Investments", item: "Stocks", value: 100000 },
+        ],
+        Debts: [
+          { id: 3, category: "Mortage", item: "Home", value: 250000 },
+          { id: 2, category: "Loans", item: "Car Loan", value: 5000 },
+        ],
+      };
+
+      const newAsset = {
+        id: 1,
+        category: "Asset Category",
+        item: "New Asset",
+        value: 0,
+      };
+
+      const newDebt = {
+        id: 1,
+        category: "Debt Category",
+        item: "New Debt",
+        value: 0,
+      };
+
+      const newObject = { Assets: "", Debts: "" };
+      newObject.Assets = newAsset;
+      newObject.Debts = newDebt;
+      const fileName = this.jsonDataFile;
+      try {
+        console.log(defaultItems);
+        fs.writeFileSync(fileName, JSON.stringify(defaultItems));
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
   async readJSON() {
     const filename = this.jsonDataFile;
+
     return new Promise(function (resolve, reject) {
       try {
         fs.readFile(filename, "utf8", function (error, data) {
@@ -89,7 +131,9 @@ class Files {
           .then(function () {
             resolve(`${folderName}\\${fileName}`);
           })
-          .catch(function (error) {reject(error)})          ;
+          .catch(function (error) {
+            reject(error);
+          });
       } catch (err) {
         console.log(err);
       }
