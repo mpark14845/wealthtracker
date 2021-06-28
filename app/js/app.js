@@ -23,7 +23,6 @@ let maxAssetRows = 0;
 let maxDebtRows = 0;
 let selected_index = -1;
 
-
 //Electron Render Responses//
 
 ipcRenderer.on("sendJSON", (e, data) => {
@@ -77,11 +76,19 @@ ipcRenderer.on("sendJSON", (e, data) => {
   writeCards($("#debtTable"), maxDebtRows, debtSummaryCollection, totalDebts);
 });
 
-
-ipcRenderer.on("sendOutPutToExcel", (e, fileName) => {
-  console.log(fileName)
+ipcRenderer.on("folderName", (e, folderName) => {
+  $("#exportFolder").val(folderName);
 });
 
+ipcRenderer.on("sendOutPutToExcel", (e, success, fileName) => {
+  if (success) {
+    alert(`${fileName} was created`);
+    console.log(fileName);
+  } else {
+    alert(`There was an error: ${fileName}`);
+    console.log(fileName);
+  }
+});
 
 //Shared Function
 
@@ -108,7 +115,7 @@ const formatter = new Intl.NumberFormat("en-US", {
 //Manage Windows//
 function writeCards(DivHolder, cardRows, Obj, objTotal) {
   const neededRows = maxRows - cardRows;
-  console.log(DivHolder, cardRows, neededRows)
+  console.log(DivHolder, cardRows, neededRows);
   let str = "";
   DivHolder.empty();
 
@@ -134,9 +141,9 @@ function writeCards(DivHolder, cardRows, Obj, objTotal) {
 }
 
 function writeDetailRows(DivHolder, Obj, type) {
-  try{
+  try {
     $(`#${DivHolder} tbody tr`).remove();
-  }catch{}
+  } catch {}
 
   const Rows = Object.keys(Obj).length;
 
@@ -153,15 +160,16 @@ function writeDetailRows(DivHolder, Obj, type) {
   for (let ID in Obj) {
     let str = `<tr>    
     <td>${Obj[ID].category}</td>    
-    <td><a href="#" onclick="EditItem(${ID}, '${type}')" >${Obj[ID].item}</a></td>
+    <td><a href="#" onclick="EditItem(${ID}, '${type}')" >${
+      Obj[ID].item
+    }</a></td>
     <td align='center'><div id='${type}Value${ID}' class="cell detailvalue" contenteditable="true" onkeypress="trapKeys(this)" onfocus="removeFormat(this)" onblur="updateItem(this, ${ID}, '${type}')">
     ${formatter.format(Obj[ID].value)}
     </div></td>    
-    </tr>`;    
+    </tr>`;
     $(`#${DivHolder}`).append(str);
   }
 }
-
 
 function manageAssets() {
   $(".navItemLI").removeClass("active");
@@ -195,11 +203,10 @@ function manageAbout() {
 }
 
 function manageHelp() {
-  $(".navItemLI").removeClass("active");  
+  $(".navItemLI").removeClass("active");
   $(".window").hide();
   $("#helpWindow").show();
 }
-
 
 function closeWindow() {
   $(".navItemLI").removeClass("active");
@@ -239,13 +246,16 @@ function selectDivText(el) {
 
 //End Manage Windows//
 
-function EditItem(recID, type) {  
-  let obj
-  if (type =='Asset'){obj = assetCollection}
-  else{obj = debtCollection}  
+function EditItem(recID, type) {
+  let obj;
+  if (type == "Asset") {
+    obj = assetCollection;
+  } else {
+    obj = debtCollection;
+  }
   selected_index = recID;
-  setCategoryList(obj)
-  $("#itemType").val(type.toLowerCase());  
+  setCategoryList(obj);
+  $("#itemType").val(type.toLowerCase());
   $("#linkCategory").val(obj[recID].category);
   $("#linkItem").val(obj[recID].item);
   $("#linkValue").val(obj[recID].value);
@@ -253,25 +263,30 @@ function EditItem(recID, type) {
   $("#editModal").modal("show");
 }
 
-function updateItem(el,rowID,  type) {
-  let obj
-  if (type =='Asset'){obj = assetCollection}
-  else{obj = debtCollection}
-  
-  let textValue = $(`#${type}Value` + rowID).html()  
+function updateItem(el, rowID, type) {
+  let obj;
+  if (type == "Asset") {
+    obj = assetCollection;
+  } else {
+    obj = debtCollection;
+  }
+
+  let textValue = $(`#${type}Value` + rowID).html();
   let temp = textValue.replace(/[^0-9.-]+/g, "");
   let convertedVal = parseFloat(temp);
   obj[rowID].value = convertedVal;
-  $(`#${type}Value` + rowID).html(formatter.format(convertedVal))    
+  $(`#${type}Value` + rowID).html(formatter.format(convertedVal));
   saveDataFile();
 }
 
 function addItem(obj, type) {
   selected_index = -1;
-  if (type =='Asset'){setCategoryList(assetSummaryCollection)}
-  else{setCategoryList(debtSummaryCollection)}
-  
-  
+  if (type == "Asset") {
+    setCategoryList(assetSummaryCollection);
+  } else {
+    setCategoryList(debtSummaryCollection);
+  }
+
   $("#itemType").val(type.toLowerCase());
   $("#linkCategory").val("");
   $("#linkItem").val("");
@@ -285,10 +300,13 @@ function SaveRecord() {
   const category = $("#linkCategory").val();
   const item = $("#linkItem").val();
   const textVal = $("#linkValue").val();
-  let value = 0
+  let value = 0;
 
-  try{value = parseFloat(textVal);}
-  catch{value = 0}
+  try {
+    value = parseFloat(textVal);
+  } catch {
+    value = 0;
+  }
 
   const newID = Date.now();
 
@@ -342,13 +360,13 @@ function DeleteRecord() {
   let itemType = $("#itemType").val();
 
   switch (itemType) {
-    case "asset":      
-      const pruneAsset = assetCollection.splice(selected_index,1)      
-      writeDetailRows("assetDetailTable", assetCollection, "Asset");            
+    case "asset":
+      const pruneAsset = assetCollection.splice(selected_index, 1);
+      writeDetailRows("assetDetailTable", assetCollection, "Asset");
       break;
     case "debt":
-      const pruneDebt = debtCollection.splice(selected_index,1)      
-      writeDetailRows("debtDetailTable", debtCollection, "Debt");                  
+      const pruneDebt = debtCollection.splice(selected_index, 1);
+      writeDetailRows("debtDetailTable", debtCollection, "Debt");
       break;
   }
   saveDataFile();
@@ -358,8 +376,8 @@ function DeleteRecord() {
   $("#linkValue").val("");
   notifyUser("delete");
   $("#editModal").modal("hide");
-  writeDetailRows("assetDetailTable", assetCollection, "Asset"); 
-  writeDetailRows("debtDetailTable", debtCollection, "Debt");            
+  writeDetailRows("assetDetailTable", assetCollection, "Asset");
+  writeDetailRows("debtDetailTable", debtCollection, "Debt");
 }
 
 function saveDataFile() {
@@ -367,19 +385,25 @@ function saveDataFile() {
   newObject.Assets = assetCollection;
   newObject.Debts = debtCollection;
   ipcRenderer.send("saveDataFile", newObject);
-  writeDetailRows("assetDetailTable", assetCollection, "Asset"); 
-  writeDetailRows("debtDetailTable", debtCollection, "Debt");            
+  writeDetailRows("assetDetailTable", assetCollection, "Asset");
+  writeDetailRows("debtDetailTable", debtCollection, "Debt");
+}
+
+function selectExportFolder() {
+  ipcRenderer.send("openExportDialog", "folderExport");
 }
 
 function outputToExcel() {
   const newObject = { Assets: "", Debts: "" };
-  newObject.Assets = assetCollection;
-  newObject.Debts = debtCollection;
-  ipcRenderer.send("outputToExcel", newObject);  
+  const folderExport = $("#exportFolder").val();
+  if (folderExport == "") {
+    alert("You must select a folder to output the file to.");
+  } else {
+    newObject.Assets = assetCollection;
+    newObject.Debts = debtCollection;
+    ipcRenderer.send("outputToExcel", folderExport, newObject);
+  }
 }
-
-
-
 
 function notifyUser(action) {
   let msg = "";
@@ -408,14 +432,12 @@ function notifyUser(action) {
   setTimeout(() => $("#footerAlert").empty(), 5000);
 }
 
-function setCategoryList(ItemObject){
+function setCategoryList(ItemObject) {
   $("#categoryList").empty();
-  let options = '';
+  let options = "";
 
-  ItemObject.forEach((obj) =>{      
-       options += '<option value="' + obj.Category + '" />';  
-  })
-  $("#categoryList").append(options)
-
-
+  ItemObject.forEach((obj) => {
+    options += '<option value="' + obj.Category + '" />';
+  });
+  $("#categoryList").append(options);
 }
